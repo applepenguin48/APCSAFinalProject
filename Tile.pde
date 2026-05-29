@@ -19,11 +19,11 @@ class Tile {
   
 
 
-public int getMatrixRow() { return matrixRow; }
-public int getMatrixCol() { return matrixCol; }
-public Candy getCandy() { return currentCandy; }
-public void setCandy(Candy c) { this.currentCandy = c; }
-public void setSelected(boolean b) { this.isSelected = b; }
+  public int getMatrixRow() { return matrixRow; }
+  public int getMatrixCol() { return matrixCol; }
+  public Candy getCandy() { return currentCandy; }
+  public void setCandy(Candy c) { this.currentCandy = c; }
+  public void setSelected(boolean b) { this.isSelected = b; }
 
  public void displayTile() {
   if (isSelected) {
