@@ -132,9 +132,9 @@ class Board {
         if (grid[j][i].getCandy() == null)
         {
           for (int up = j - 1; up >= 0; up--) {
-          if (grid[up][k].getCandy() != null) {
-            grid[j][k].setCandy(grid[up][k].getCandy());
-            grid[up][k].setCandy(null);
+          if (grid[up][i].getCandy() != null) {
+            grid[j][i].setCandy(grid[up][i].getCandy());
+            grid[up][i].setCandy(null);
             break;
           }
         }
