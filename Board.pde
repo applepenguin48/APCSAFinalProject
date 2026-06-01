@@ -6,6 +6,7 @@ class Board {
   private int offsetX = 60; 
   private int offsetY = 60;  
   private Tile firstSelected = null;
+  private int score;
 
   public Board(int r, int c) {
     this.rows = r;
@@ -105,7 +106,7 @@ class Board {
   return foundAnyMatch;
  }
  
-   public void cascadeBoard {
+   public void cascadeBoard(){
      clearMatches();
      shiftCandies();
      refillCandies();
@@ -142,7 +143,7 @@ class Board {
      }
    }
 
-   private void refillBoard(){
+   private void refillCandies(){
      for (int i = 0; i < cols; i++){
       for (int j = 0; j < rows; j++){
         if (grid[j][i].getCandy() == null)
