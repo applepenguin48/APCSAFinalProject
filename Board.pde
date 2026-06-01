@@ -6,6 +6,7 @@ class Board {
   private int offsetX = 60; 
   private int offsetY = 60;  
   private Tile firstSelected = null;
+  private int score;
 
   public Board(int r, int c) {
     this.rows = r;
@@ -13,6 +14,10 @@ class Board {
     grid = new Tile[rows][cols];
     
     initializeBoard();
+  }
+
+  public int getScore(){
+    return score;
   }
 
   private void initializeBoard() {
@@ -47,6 +52,16 @@ class Board {
     else {
       if (isAdjacent(firstSelected, clickedTile)) {
         swapCandies(firstSelected, clickedTile); 
+
+        if (checkMatches()){
+          cascadeBoard();
+          while (checkMatches()){
+            cascadeBoard();
+          }
+        }
+        else {
+          swapCandies(firstSelected, clickedTile);
+        }
       }
       firstSelected.setSelected(false);
       firstSelected = null;
@@ -67,42 +82,55 @@ class Board {
  }
  
  public boolean checkMatches() {
-  boolean foundAnyMatch = false;
-  for (int i = 0; i < rows; i++) {
+   boolean horizontalMatches = checkHorizontal();
+   boolean verticalMatches = checkVertical();
+   return horizontalMatches || verticalMatches;
+ }
+
+ private boolean checkHorizontal(){
+   boolean foundMatch = false;
+   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols - 2; j++) {
-      Candy c1 = grid[i][j].getCandy();
-      Candy c2 = grid[i][j+1].getCandy();
-      Candy c3 = grid[i][j+2].getCandy();
+      Candy candy1 = grid[i][j].getCandy();
+      Candy candy2 = grid[i][j+1].getCandy();
+      Candy candy3 = grid[i][j+2].getCandy();
 
-      if (c1 != null && c2 != null && c3 != null) {
-        if (c1.getColorType() == c2.getColorType() && c1.getColorType() == c3.getColorType()) {
-          c1.setMatched(true);
-          c2.setMatched(true);
-          c3.setMatched(true);
-          foundAnyMatch = true;
-        }
+      if (candy1 != null && candy2 != null && candy3 != null) 
+       {
+        if (candy1.getColorType() == candy2.getColorType() && candy1.getColorType() == candy3.getColorType()) 
+         {
+          candy1.setMatched(true);
+          candy2.setMatched(true);
+          candy3.setMatched(true);
+          foundMatch = true;
+         }
+       }
       }
-    }
-  }
+     }
+    return foundMatch;
+ }
 
-  for (int j = 0; j < cols; j++) {
-    for (int i = 0; i < rows - 2; i++) {
-      Candy c1 = grid[i][j].getCandy();
-      Candy c2 = grid[i+1][j].getCandy();
-      Candy c3 = grid[i+2][j].getCandy();
+ private boolean checkVertical(){
+   boolean foundMatch = false;
+   for (int i = 0; i < cols; i++) {
+    for (int j = 0; j < rows - 2; j++) {
+      Candy candy1 = grid[j][i].getCandy();
+      Candy candy2 = grid[j+1][i].getCandy();
+      Candy candy3 = grid[j+2][i].getCandy();
 
-      if (c1 != null && c2 != null && c3 != null) {
-        if (c1.getColorType() == c2.getColorType() && c1.getColorType() == c3.getColorType()) {
-          c1.setMatched(true);
-          c2.setMatched(true);
-          c3.setMatched(true);
-          foundAnyMatch = true;
-        }
+      if (candy1 != null && candy2 != null && candy3 != null) 
+       {
+        if (candy1.getColorType() == candy2.getColorType() && candy1.getColorType() == candy3.getColorType()) 
+         {
+          candy1.setMatched(true);
+          candy2.setMatched(true);
+          candy3.setMatched(true);
+          foundMatch = true;
+         }
+       }
       }
-    }
-  }
-
-  return foundAnyMatch;
+     }
+    return foundMatch;
  }
  
   public void drawScoreBoard() {
