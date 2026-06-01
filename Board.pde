@@ -133,50 +133,13 @@ class Board {
     return foundMatch;
  }
  
-   public void cascadeBoard(){
-     clearMatches();
-     shiftCandies();
-     refillCandies();
-   }
-
-
-   private void clearMatches(){    
-     for (int i = 0; i < cols; i++){
-       for (int j = 0; j < rows; j++){
-        if (grid[j][i].getCandy() != null && grid[j][i].getCandy().getMatched()) 
-         {
-          grid[j][i].setCandy(null);
-          score += 10;
-         }
-     }
-   }
+  public void drawScoreBoard() {
+    fill(50);
+    rect(60, 520, 480, 50, 10);
+    fill(255);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("SCORE: " + score, width/2, 545);
   }
-
-
-   private void shiftCandies(){
-     for (int i = 0; i < cols; i++){
-       for (int j = rows - 1; j >= 0; j--){
-        if (grid[j][i].getCandy() == null)
-        {
-          for (int up = j - 1; up >= 0; up--) {
-          if (grid[up][i].getCandy() != null) {
-            grid[j][i].setCandy(grid[up][i].getCandy());
-            grid[up][i].setCandy(null);
-            break;
-          }
-        }
-        }
-      }
-     }
-   }
-
-   private void refillCandies(){
-     for (int i = 0; i < cols; i++){
-      for (int j = 0; j < rows; j++){
-        if (grid[j][i].getCandy() == null)
-         {
-	    	grid[j][i].setCandy(new Candy(int(random(5))));
-		 }
-      }
-     }
-   }
+ }
+}
