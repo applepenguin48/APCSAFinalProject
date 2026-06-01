@@ -180,3 +180,26 @@ class Board {
       }
      }
    }
+
+  private void triggerFour(int targetRow, int targetCol){
+    for (int i = 0; i < cols; i++){
+     if (grid[targetRow][i].getCandy() != null)
+	 {
+		grid[targetRow][i].setCandy(null);
+		score += 10;
+	 }
+    }
+
+	for (int j = 0; j < rows; j++){
+	 if (grid[j][targetCol].getCandy() != null)
+	 {
+		grid[j][targetCol].setCandy(null);
+		score += 10;
+	 }
+	}
+  }
+
+  private void triggerBomb(int targetRow, int targetCol){
+	
+  }
+}
