@@ -60,7 +60,7 @@ class Board {
           }
         }
         else {
-          swapCandies(firstSelected, clickedTile)
+          swapCandies(firstSelected, clickedTile);
         }
       }
       firstSelected.setSelected(false);
@@ -142,7 +142,7 @@ class Board {
 
    private void shiftCandies(){
      for (int i = 0; i < cols; i++){
-       for (int j = 0; j < rows; j++){
+       for (int j = rows - 1; j >= 0; j--){
         if (grid[j][i].getCandy() == null)
         {
           for (int up = j - 1; up >= 0; up--) {
@@ -168,4 +168,3 @@ class Board {
      }
    }
  }
-}
