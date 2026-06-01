@@ -110,7 +110,32 @@ class Board {
      shiftCandies();
      refillCandies();
    }
-   private void clearMatches(){    }
- 
+   private void clearMatches(){    
+     for (int i = 0; i < cols; i++){
+       for (int j = 0; j < rows; j++){
+        if (grid[j][i].getCandy() != null && grid[j][i].getCandy().getMatched()) 
+         {
+          grid[j][i].setCandy(null);
+          score += 10;
+         }
+     }
+   }
+  }
+   private void shiftCandies(){
+     for (int i = 0; i < cols; i++){
+       for (int j = 0; j < rows; j++){
+        if (grid[j][i].getCandy() == null)
+        {
+          for (int up = j - 1; up >= 0; up--) {
+          if (grid[up][k].getCandy() != null) {
+            grid[j][k].setCandy(grid[up][k].getCandy());
+            grid[up][k].setCandy(null);
+            break;
+          }
+        }
+        }
+      }
+     }
+   }
  }
 }
