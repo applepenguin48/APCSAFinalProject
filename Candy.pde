@@ -1,9 +1,15 @@
 class Candy {
   private int colored;
   private boolean isMatched = false;
+  private int specialCandy;
 
-  public Candy(int type) {
-    this.colored = type;
+  public Candy(int typeColor) {
+    this.colored = typeColor;
+  }
+
+  public Candy (int typeColor, int special){
+    this.colored = typeColor;
+    this.special = special;
   }
 
   public int getColorType() 
