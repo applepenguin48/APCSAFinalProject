@@ -105,29 +105,12 @@ class Board {
   return foundAnyMatch;
  }
  
- public void clearCascade(){
-   for (int k = 0; k < cols; k++){
-    for (int m = 0; m < rows; m++){
-     if (grid[m][k].getCandy() != null && grid[m][k].getCandy().getMatched() == true)
-     {
-        grid[m][k].setCandy(null);
-        score += 10;
-     }
-    }
-    for (int m = rows-1; m >= 0; m--){
-     if (grid[m][k].getCandy == null){
-       for (int k = cols - 1; cols >= 0; cols--)
-       {
-        if (grid[k][m].getCandy() != null)
-        {
-          grid[m][k].setCandy(grid[k][m].getCandy());
-          grid[k][m].setCandy(null);
-          break;
-        }
-       }
-     }
-    }
+   public void cascadeBoard {
+     clearMatches();
+     shiftCandies();
+     refillCandies();
    }
-   }
+   private void clearMatches(){    }
+ 
  }
 }
