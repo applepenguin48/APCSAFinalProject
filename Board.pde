@@ -110,19 +110,13 @@ class Board {
     return foundMatch;
  }
 
-  public boolean checkMatches() {
-   boolean horizontalMatches = checkHorizontal();
-   boolean verticalMatches = checkVertical();
-   return horizontalMatches || verticalMatches;
- }
-
  private boolean checkVertical(){
    boolean foundMatch = false;
    for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows - 2; j++) {
-      Candy candy1 = grid[i][j].getCandy();
-      Candy candy2 = grid[i][j+1].getCandy();
-      Candy candy3 = grid[i][j+2].getCandy();
+      Candy candy1 = grid[j][i].getCandy();
+      Candy candy2 = grid[j][i+1].getCandy();
+      Candy candy3 = grid[j][i+2].getCandy();
 
       if (candy1 != null && candy2 != null && candy3 != null) 
        {
@@ -186,4 +180,3 @@ class Board {
       }
      }
    }
- }
