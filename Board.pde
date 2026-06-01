@@ -110,6 +110,8 @@ class Board {
      shiftCandies();
      refillCandies();
    }
+
+
    private void clearMatches(){    
      for (int i = 0; i < cols; i++){
        for (int j = 0; j < rows; j++){
@@ -121,6 +123,8 @@ class Board {
      }
    }
   }
+
+
    private void shiftCandies(){
      for (int i = 0; i < cols; i++){
        for (int j = 0; j < rows; j++){
@@ -134,6 +138,17 @@ class Board {
           }
         }
         }
+      }
+     }
+   }
+
+   private void refillBoard(){
+     for (int i = 0; i < cols; i++){
+      for (int j = 0; j < rows; j++){
+        if (grid[j][i].getCandy() == null)
+         {
+						grid[j][i].setCandy(new Candy(int(random(5))));
+				 }
       }
      }
    }
