@@ -147,8 +147,8 @@ class Board {
       for (int j = 0; j < rows; j++){
         if (grid[j][i].getCandy() == null)
          {
-						grid[j][i].setCandy(new Candy(int(random(5))));
-				 }
+	    	grid[j][i].setCandy(new Candy(int(random(5))));
+		 }
       }
      }
    }
