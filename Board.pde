@@ -52,6 +52,16 @@ class Board {
     else {
       if (isAdjacent(firstSelected, clickedTile)) {
         swapCandies(firstSelected, clickedTile); 
+
+        if (checkMatches()){
+          cascadeBoard();
+          while (checkMatches()){
+            cascadeBoard();
+          }
+        }
+        else {
+          swapCandies(firstSelected, clickedTile)
+        }
       }
       firstSelected.setSelected(false);
       firstSelected = null;
