@@ -16,6 +16,10 @@ class Board {
     initializeBoard();
   }
 
+  public int getScore(){
+    return score;
+  }
+
   private void initializeBoard() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
