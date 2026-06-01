@@ -87,10 +87,39 @@ class Board {
    return horizontalMatches || verticalMatches;
  }
 
- private boolean horizontalMatches(){
+ private boolean checkHorizontal(){
    boolean foundMatch = false;
    for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols - 2; j++) {
+      Candy candy1 = grid[i][j].getCandy();
+      Candy candy2 = grid[i][j+1].getCandy();
+      Candy candy3 = grid[i][j+2].getCandy();
+
+      if (candy1 != null && candy2 != null && candy3 != null) 
+       {
+        if (candy1.getColorType() == candy2.getColorType() && candy1.getColorType() == candy3.getColorType()) 
+         {
+          candy1.setMatched(true);
+          candy2.setMatched(true);
+          candy3.setMatched(true);
+          foundMatch = true;
+         }
+       }
+      }
+     }
+    return foundMatch;
+ }
+
+  public boolean checkMatches() {
+   boolean horizontalMatches = checkHorizontal();
+   boolean verticalMatches = checkVertical();
+   return horizontalMatches || verticalMatches;
+ }
+
+ private boolean checkVertical(){
+   boolean foundMatch = false;
+   for (int i = 0; i < cols; i++) {
+    for (int j = 0; j < rows - 2; j++) {
       Candy candy1 = grid[i][j].getCandy();
       Candy candy2 = grid[i][j+1].getCandy();
       Candy candy3 = grid[i][j+2].getCandy();
