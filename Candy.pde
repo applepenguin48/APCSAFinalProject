@@ -57,12 +57,13 @@ class Candy {
   public boolean getMatched() 
   { return isMatched; }
 
-  public void display(float cx, float cy, float diameter) {
-    if (isMatched) {
-    fill(255, 255, 255, 150); 
-    ellipse(cx, cy, diameter, diameter);
-    return;
-    }
+  public void display(float size) {
+    if (scale <= 0) return;
+
+    pushMatrix();
+    translate(x, y);  
+    scale(scale); 
+
     noStroke();
     if (colored == 0) fill(255, 50, 50);    // Red
     else if (colored == 1) fill(50, 100, 255); // Blue
@@ -70,5 +71,7 @@ class Candy {
     else if (colored == 3) fill(255, 215, 0);  // Yellow
     else if (colored == 4) fill(150, 50, 200); // Purple
     ellipse(cx, cy, diameter, diameter);
+
+    popMatrix();
   }
 }
