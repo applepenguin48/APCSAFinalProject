@@ -2,144 +2,210 @@ class Board {
   private int rows;
   private int cols;
   private Tile[][] grid;
-  private int tileSize = 60;
-  private int offsetX = 60; 
-  private int offsetY = 60;  
+  private float tileSize = 60;
+  private float offsetX = 60, offsetY = 60;
   private Tile firstSelected = null;
-  private int score;
+  private int score = 0;
+  private int gameState = 0; 
 
-  public Board(int r, int c) {
+  Board(int r, int c) {
     this.rows = r;
     this.cols = c;
     grid = new Tile[rows][cols];
-    
     initializeBoard();
   }
 
-  public int getScore(){
-    return score;
-  }
+  public void updateAnimations() {
+    boolean isAnythingShrinking = false;
+    boolean isAnythingMoving = false;
 
-  private void initializeBoard() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-        float x = offsetX + j * tileSize;
-        float y = offsetY + i * tileSize;
-        grid[i][j] = new Tile(i, j, x, y, tileSize);
+        if (grid[i][j].candy != null) {
+          grid[i][j].candy.update();
+          if (grid[i][j].candy.isShrinking()) isAnythingShrinking = true;
+          if (grid[i][j].candy.isMoving()) isAnythingMoving = true;
+        }
+      }
+    }
+
+    if (gameState == 1 && !isAnythingShrinking) {
+      removeMatches();
+      applyGravity();
+      refillBoard();
+      gameState = 2; 
+    } 
+    else if (gameState == 2 && !isAnythingMoving) {
+      if (scanAndMarkMatches()) {
+        gameState = 1; 
+      } else {
+        gameState = 0; 
       }
     }
   }
 
-  public void display() {
+ public void display() {
+    for (int i = 0; i < rows; i++) for (int j = 0; j < cols; j++) grid[i][j].display();
+    
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-        grid[i][j].displayTile();
+        if (grid[i][j].candy != null) grid[i][j].candy.display(tileSize * 0.75);
       }
     }
+  }
+
+  public void initializeBoard() {
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        float px = offsetX + j * tileSize;
+        float py = offsetY + i * tileSize;
+        grid[i][j] = new Tile(i, j, px, py, tileSize);
+        
+        int randomType = int(random(5));
+        while (createsStartingMatch(i, j, randomType)) {
+          randomType = int(random(5));
+        }
+        grid[i][j].candy = new Candy(randomType, px + tileSize/2, py + tileSize/2);
+      }
+    }
+  }
+
+  public boolean createsStartingMatch(int r, int c, int type) {
+    if (c >= 2 && grid[r][c-1].candy != null && grid[r][c-2].candy != null &&
+        grid[r][c-1].candy.type == type && grid[r][c-2].candy.type == type) return true;
+    if (r >= 2 && grid[r-1][c].candy != null && grid[r-2][c].candy != null &&
+        grid[r-1][c].candy.type == type && grid[r-2][c].candy.type == type) return true;
+    return false;
   }
 
   public void handleMouseClick(int mx, int my) {
-  int clickedCol = (mx - offsetX) / tileSize;
-  int clickedRow = (my - offsetY) / tileSize;
+    if (gameState != 0) return; 
 
-  if (clickedRow >= 0 && clickedRow < rows && clickedCol >= 0 && clickedCol < cols) {
-    Tile clickedTile = grid[clickedRow][clickedCol];
+    int c = int((mx - offsetX) / tileSize);
+    int r = int((my - offsetY) / tileSize);
 
-    if (firstSelected == null) {
-      firstSelected = clickedTile;
-      firstSelected.setSelected(true); 
-    } 
-    else {
-      if (isAdjacent(firstSelected, clickedTile)) {
-        swapCandies(firstSelected, clickedTile); 
+    if (r >= 0 && r < rows && c >= 0 && c < cols) {
+      Tile clickedTile = grid[r][c];
 
-        if (checkMatches()){
-          cascadeBoard();
-          while (checkMatches()){
-            cascadeBoard();
+      if (firstSelected == null) {
+        firstSelected = clickedTile;
+        firstSelected.isSelected = true;
+      } else {
+        if (isAdjacent(firstSelected, clickedTile)) {
+          swapCandies(firstSelected, clickedTile);
+          
+          if (scanAndMarkMatches()) {
+            gameState = 1; // Start the breaking animation!
+          } else {
+            swapCandies(firstSelected, clickedTile); 
           }
         }
-        else {
-          swapCandies(firstSelected, clickedTile);
-        }
+        firstSelected.isSelected = false;
+        firstSelected = null;
       }
-      firstSelected.setSelected(false);
-      firstSelected = null;
     }
   }
-}
 
- private boolean isAdjacent(Tile t1, Tile t2) {
-  int rDiff = abs(t1.getMatrixRow() - t2.getMatrixRow());
-  int cDiff = abs(t1.getMatrixCol() - t2.getMatrixCol());
-  return (rDiff == 1 && cDiff == 0) || (rDiff == 0 && cDiff == 1);
- }
-
- private void swapCandies(Tile t1, Tile t2) {
-  Candy temp = t1.getCandy();
-  t1.setCandy(t2.getCandy());
-  t2.setCandy(temp);
- }
- 
- public boolean checkMatches() {
-   boolean horizontalMatches = checkHorizontal();
-   boolean verticalMatches = checkVertical();
-   return horizontalMatches || verticalMatches;
- }
-
- private boolean checkHorizontal(){
-   boolean foundMatch = false;
-   for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols - 2; j++) {
-      Candy candy1 = grid[i][j].getCandy();
-      Candy candy2 = grid[i][j+1].getCandy();
-      Candy candy3 = grid[i][j+2].getCandy();
-
-      if (candy1 != null && candy2 != null && candy3 != null) 
-       {
-        if (candy1.getColorType() == candy2.getColorType() && candy1.getColorType() == candy3.getColorType()) 
-         {
-          candy1.setMatched(true);
-          candy2.setMatched(true);
-          candy3.setMatched(true);
-          foundMatch = true;
-         }
-       }
-      }
-     }
-    return foundMatch;
- }
-
- private boolean checkVertical(){
-   boolean foundMatch = false;
-   for (int i = 0; i < cols; i++) {
-    for (int j = 0; j < rows - 2; j++) {
-      Candy candy1 = grid[j][i].getCandy();
-      Candy candy2 = grid[j+1][i].getCandy();
-      Candy candy3 = grid[j+2][i].getCandy();
-
-      if (candy1 != null && candy2 != null && candy3 != null) 
-       {
-        if (candy1.getColorType() == candy2.getColorType() && candy1.getColorType() == candy3.getColorType()) 
-         {
-          candy1.setMatched(true);
-          candy2.setMatched(true);
-          candy3.setMatched(true);
-          foundMatch = true;
-         }
-       }
-      }
-     }
-    return foundMatch;
- }
- 
-  public void drawScoreBoard() {
-    fill(50);
-    rect(60, 520, 480, 50, 10);
-    fill(255);
-    textSize(20);
-    textAlign(CENTER, CENTER);
-    text("SCORE: " + score, width/2, 545);
+  public boolean isAdjacent(Tile t1, Tile t2) {
+    int rDiff = abs(t1.r - t2.r);
+    int cDiff = abs(t1.c - t2.c);
+    return (rDiff == 1 && cDiff == 0) || (rDiff == 0 && cDiff == 1);
   }
- }
+
+  public void swapCandies(Tile t1, Tile t2) {
+    Candy c1 = t1.getCandy();
+    Candy c2 = t2.getCandy();
+    t1.setCandy(c2);
+    t2.setCandy(c1);
+
+
+    if (c1 != null) {
+      c1.x = t2.x + tileSize/2;
+      c1.y = t2.y + tileSize/2;
+      c1.setTarget(c1.x, c1.y);
+    }
+    if (c2 != null) {
+      c2.x = t1.x + tileSize/2;
+      c2.y = t1.y + tileSize/2;
+      c2.setTarget(c2.x, c2.y);
+    }
+  }
+
+  public boolean scanAndMarkMatches() {
+    boolean foundMatch = false;
+    
+    for (int i=0; i<rows; i++) for (int j=0; j<cols; j++) 
+      if (grid[i][j].candy != null) grid[i][j].candy.isMatched = false;
+
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols - 2; j++) {
+        if (grid[i][j].candy == null) continue;
+        int type = grid[i][j].candy.type;
+        if (grid[i][j+1].candy != null && grid[i][j+2].candy != null &&
+            grid[i][j+1].candy.type == type && grid[i][j+2].candy.type == type) {
+          grid[i][j].candy.isMatched = true;
+          grid[i][j+1].candy.isMatched = true;
+          grid[i][j+2].candy.isMatched = true;
+          foundMatch = true;
+        }
+      }
+    }
+
+    for (int j = 0; j < cols; j++) {
+      for (int i = 0; i < rows - 2; i++) {
+        if (grid[i][j].candy == null) continue;
+        int type = grid[i][j].candy.type;
+        if (grid[i+1][j].candy != null && grid[i+2][j].candy != null &&
+            grid[i+1][j].candy.type == type && grid[i+2][j].candy.type == type) {
+          grid[i][j].candy.isMatched = true;
+          grid[i+1][j].candy.isMatched = true;
+          grid[i+2][j].candy.isMatched = true;
+          foundMatch = true;
+        }
+      }
+    }
+    return foundMatch;
+  }
+
+  public void removeMatches() {
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        if (grid[i][j].candy != null && grid[i][j].candy.isMatched) {
+          grid[i][j].candy = null; 
+          score += 10;
+        }
+      }
+    }
+  }
+
+  public void applyGravity() {
+    for (int j = 0; j < cols; j++) {
+      int writeRow = rows - 1;
+      for (int i = rows - 1; i >= 0; i--) {
+        Candy c = grid[i][j].candy;
+        if (c != null) {
+          grid[writeRow][j].candy = c;
+          if (writeRow != i) grid[i][j].candy = null;
+          c.setTarget(grid[writeRow][j].x + tileSize/2, grid[writeRow][j].y + tileSize/2);
+          writeRow--;
+        }
+      }
+    }
+  }
+
+  void refillBoard() {
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        if (grid[i][j].candy == null) {
+          float px = grid[i][j].x + tileSize/2;
+          float targetPy = grid[i][j].y + tileSize/2;
+          float spawnPy = offsetY - (rows * tileSize) + (i * tileSize);
+          
+          Candy newCandy = new Candy(int(random(5)), px, spawnPy);
+          newCandy.setTarget(px, targetPy);
+          grid[i][j].candy = newCandy;
+        }
+      }
+    }
+  }
 }
