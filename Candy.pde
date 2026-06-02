@@ -2,6 +2,11 @@ class Candy {
   private int colored;
   private boolean isMatched = false;
   private int specialCandy;
+  private float x;
+  private float y;
+  private float targetX; 
+  private float targetY;
+  private float scale = 1.0;
 
   public void update() {
     if (isMatched && scale > 0) {
