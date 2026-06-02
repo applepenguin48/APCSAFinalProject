@@ -3,13 +3,20 @@ class Candy {
   private boolean isMatched = false;
   private int specialCandy;
 
-  public Candy(int typeColor) {
-    this.colored = typeColor;
-  }
+  public void update() {
+    if (isMatched && scale > 0) {
+      scale -= 0.1; 
+      if (scale < 0) scale = 0;
+    }
 
-  public Candy (int typeColor, int special){
-    this.colored = typeColor;
-    this.special = special;
+    if (isMoving()) {
+      x = lerp(x, targetX, 0.2); 
+      y = lerp(y, targetY, 0.2);
+    } 
+    else {
+      x = targetX; 
+      y = targetY;
+    }
   }
 
   public int getColorType() 
