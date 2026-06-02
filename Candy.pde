@@ -8,6 +8,14 @@ class Candy {
   private float targetY;
   private float scale = 1.0;
 
+  public Candy(int colored, float startX, float startY) {
+    this.colored = colored;
+    this.x = startX;
+    this.y = startY;
+    this.targetX = startX;
+    this.targetY = startY;
+  }
+
   public void setTarget(float tx, float ty) {
     this.targetX = tx;
     this.targetY = ty;
