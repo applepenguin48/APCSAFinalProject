@@ -61,20 +61,20 @@ class Board {
         float py = offsetY + i * tileSize;
         grid[i][j] = new Tile(i, j, px, py, tileSize);
         
-        int randomType = int(random(5));
-        while (createsStartingMatch(i, j, randomType)) {
-          randomType = int(random(5));
+        int randomcolored = int(random(5));
+        while (createsStartingMatch(i, j, randomcolored)) {
+          randomcolored = int(random(5));
         }
-        grid[i][j].candy = new Candy(randomType, px + tileSize/2, py + tileSize/2);
+        grid[i][j].candy = new Candy(randomcolored, px + tileSize/2, py + tileSize/2);
       }
     }
   }
 
-  public boolean createsStartingMatch(int r, int c, int type) {
+  public boolean createsStartingMatch(int r, int c, int colored) {
     if (c >= 2 && grid[r][c-1].candy != null && grid[r][c-2].candy != null &&
-        grid[r][c-1].candy.type == type && grid[r][c-2].candy.type == type) return true;
+        grid[r][c-1].candy.colored == colored && grid[r][c-2].candy.colored == colored) return true;
     if (r >= 2 && grid[r-1][c].candy != null && grid[r-2][c].candy != null &&
-        grid[r-1][c].candy.type == type && grid[r-2][c].candy.type == type) return true;
+        grid[r-1][c].candy.colored == colored && grid[r-2][c].candy.colored == colored) return true;
     return false;
   }
 
@@ -95,7 +95,7 @@ class Board {
           swapCandies(firstSelected, clickedTile);
           
           if (scanAndMarkMatches()) {
-            gameState = 1; // Start the breaking animation!
+            gameState = 1; 
           } else {
             swapCandies(firstSelected, clickedTile); 
           }
@@ -140,9 +140,9 @@ class Board {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols - 2; j++) {
         if (grid[i][j].candy == null) continue;
-        int type = grid[i][j].candy.type;
+        int colored = grid[i][j].candy.colored;
         if (grid[i][j+1].candy != null && grid[i][j+2].candy != null &&
-            grid[i][j+1].candy.type == type && grid[i][j+2].candy.type == type) {
+            grid[i][j+1].candy.colored == colored && grid[i][j+2].candy.colored == colored) {
           grid[i][j].candy.isMatched = true;
           grid[i][j+1].candy.isMatched = true;
           grid[i][j+2].candy.isMatched = true;
@@ -154,9 +154,9 @@ class Board {
     for (int j = 0; j < cols; j++) {
       for (int i = 0; i < rows - 2; i++) {
         if (grid[i][j].candy == null) continue;
-        int type = grid[i][j].candy.type;
+        int colored = grid[i][j].candy.colored;
         if (grid[i+1][j].candy != null && grid[i+2][j].candy != null &&
-            grid[i+1][j].candy.type == type && grid[i+2][j].candy.type == type) {
+            grid[i+1][j].candy.colored == colored && grid[i+2][j].candy.colored == colored) {
           grid[i][j].candy.isMatched = true;
           grid[i+1][j].candy.isMatched = true;
           grid[i+2][j].candy.isMatched = true;

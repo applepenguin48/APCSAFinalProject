@@ -1,45 +1,43 @@
 class Tile {
-  private int matrixRow;
-  private int matrixCol;
-  private float pixelX;
-  private float pixelY;
+  private int r;               
+  private int c;               
+  private float x;            
+  private float y;            
+  private Candy candy;   
+  private boolean isSelected;  
   private float size;
-  private Candy currentCandy;
-  private boolean isSelected = false;
 
-  public Tile(int r, int c, float x, float y, float s) {
-    this.matrixRow = r;
-    this.matrixCol = c;
-    this.pixelX = x;
-    this.pixelY = y;
-    this.size = s;
-    int randomColor = int(random(5)); 
-    this.currentCandy = new Candy(randomColor);
+  Tile(int r, int c, float x, float y, float size) {
+    this.r = r;
+    this.c = c;
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.candy = null;
+    this.isSelected = false;
   }
-  
 
-
-  public int getMatrixRow() { return matrixRow; }
-  public int getMatrixCol() { return matrixCol; }
-  public Candy getCandy() { return currentCandy; }
-  public void setCandy(Candy c) { this.currentCandy = c; }
-  public void setSelected(boolean b) { this.isSelected = b; }
-
- public void displayTile() {
-  if (isSelected) {
-    stroke(255, 0, 0); 
-    strokeWeight(3);
-  } else {
-    stroke(200);
-    strokeWeight(1);
+    public void display() {
+     if (isSelected) {
+      stroke(255, 255, 0); 
+      strokeWeight(3);     
+     } else {
+      stroke(255, 50);     
+      strokeWeight(1);
+    }
+    
+    fill(45, 45, 55); 
+    rect(x, y, size, size, 8); 
   }
+
+  public int getMatrixRow() { return this.r; }
+  public int getMatrixCol() { return this.c; }
+  public Candy getCandy()   { return this.candy; }
   
-  fill(255);
-  rect(pixelX, pixelY, size, size);
-  strokeWeight(1); 
-  
-  if (currentCandy != null) {
-    currentCandy.display(pixelX + size/2, pixelY + size/2, size * 0.7);
+  public void setCandy(Candy c){ 
+    this.candy = c; 
   }
- }
+  public void setSelected(boolean b){ 
+    this.isSelected = b; 
+  }
 }
