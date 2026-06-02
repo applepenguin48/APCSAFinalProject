@@ -8,6 +8,19 @@ class Candy {
   private float targetY;
   private float scale = 1.0;
 
+  public void setTarget(float tx, float ty) {
+    this.targetX = tx;
+    this.targetY = ty;
+  }
+
+  public boolean isMoving() {
+    return dist(x, y, targetX, targetY) > 0.5; 
+  }
+
+  public boolean isShrinking() {
+    return isMatched && scale > 0;
+  }
+
   public void update() {
     if (isMatched && scale > 0) {
       scale -= 0.1; 
