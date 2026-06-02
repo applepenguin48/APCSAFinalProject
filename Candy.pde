@@ -70,7 +70,7 @@ class Candy {
     else if (colored == 2) fill(50, 200, 50);  // Green
     else if (colored == 3) fill(255, 215, 0);  // Yellow
     else if (colored == 4) fill(150, 50, 200); // Purple
-    ellipse(cx, cy, diameter, diameter);
+    ellipse(0, 0, size, size);
 
     popMatrix();
   }
