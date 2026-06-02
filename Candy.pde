@@ -1,13 +1,55 @@
 class Candy {
   private int colored;
   private boolean isMatched = false;
+  private int specialCandy;
+  private float x;
+  private float y;
+  private float targetX; 
+  private float targetY;
+  private float scale = 1.0;
 
-  public Candy(int type) {
-    this.colored = type;
+  public Candy(int colored, float startX, float startY) {
+    this.colored = colored;
+    this.x = startX;
+    this.y = startY;
+    this.targetX = startX;
+    this.targetY = startY;
+  }
+
+  public void setTarget(float tx, float ty) {
+    this.targetX = tx;
+    this.targetY = ty;
+  }
+
+  public boolean isMoving() {
+    return dist(x, y, targetX, targetY) > 0.5; 
+  }
+
+  public boolean isShrinking() {
+    return isMatched && scale > 0;
+  }
+
+  public void update() {
+    if (isMatched && scale > 0) {
+      scale -= 0.1; 
+      if (scale < 0) scale = 0;
+    }
+
+    if (isMoving()) {
+      x = lerp(x, targetX, 0.2); 
+      y = lerp(y, targetY, 0.2);
+    } 
+    else {
+      x = targetX; 
+      y = targetY;
+    }
   }
 
   public int getColorType() 
   { return colored; }
+
+  public int getSpecialCandy() 
+  {return specialCandy;}
 
   public void setMatched(boolean m) 
   { this.isMatched = m; }
