@@ -7,6 +7,18 @@ class Candy {
   private float targetX; 
   private float targetY;
   private float scale = 1.0;
+  private int pendingSpecial = 0; 
+  public boolean activated = false; 
+
+  public void setPendingSpecial(int s){
+    pendingSpecial = s; 
+  }
+  public int getPendingSpecial(){ 
+   return pendingSpecial; 
+  }
+  public void setSpecial(int s){ 
+    specialCandy = s; 
+  }
 
   public Candy(int colored, float startX, float startY) {
     this.colored = colored;
@@ -71,6 +83,21 @@ class Candy {
     else if (colored == 3) fill(255, 215, 0);  // Yellow
     else if (colored == 4) fill(150, 50, 200); // Purple
     ellipse(0, 0, size, size);
+
+    if (specialCandy == 1) { 
+      stroke(255);
+      strokeWeight(4);
+      line(-size/2, 0, size/2, 0);
+    } 
+    else if (specialCandy == 2) {
+      stroke(255);
+      strokeWeight(4);
+      line(0, -size/2, 0, size/2);
+    }
+    else if (specialCandy == 3) {
+      fill(0);
+      ellipse(0, 0, size * 0.4, size * 0.4);
+    }
 
     popMatrix();
   }
