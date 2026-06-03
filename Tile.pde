@@ -30,9 +30,15 @@ class Tile {
     rect(x, y, size, size, 8); 
   }
 
-  public int getMatrixRow() { return this.r; }
-  public int getMatrixCol() { return this.c; }
-  public Candy getCandy()   { return this.candy; }
+  public int getMatrixRow(){ 
+    return this.r; 
+  }
+  public int getMatrixCol(){ 
+    return this.c; 
+  }
+  public Candy getCandy(){ 
+    return this.candy; 
+  }
   
   public void setCandy(Candy c){ 
     this.candy = c; 
