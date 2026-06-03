@@ -36,7 +36,8 @@ class Board {
       gameState = 2; 
     } 
     else if (gameState == 2 && !isAnythingMoving) {
-      if (scanAndMarkMatches()) {
+      if (checkMatches()) {
+        activateSpecials();
         gameState = 1; 
       } else {
         gameState = 0; 
@@ -94,7 +95,8 @@ class Board {
         if (isAdjacent(firstSelected, clickedTile)) {
           swapCandies(firstSelected, clickedTile);
           
-          if (scanAndMarkMatches()) {
+          if (checkMatches()) {
+            activateSpecials();
             gameState = 1; 
           } else {
             swapCandies(firstSelected, clickedTile); 
@@ -131,50 +133,149 @@ class Board {
     }
   }
 
-  public boolean scanAndMarkMatches() {
-    boolean foundMatch = false;
-    
-    for (int i=0; i<rows; i++) for (int j=0; j<cols; j++) 
-      if (grid[i][j].candy != null) grid[i][j].candy.isMatched = false;
-
-    for (int i = 0; i < rows; i++) {
-      for (int j = 0; j < cols - 2; j++) {
-        if (grid[i][j].candy == null) continue;
-        int colored = grid[i][j].candy.colored;
-        if (grid[i][j+1].candy != null && grid[i][j+2].candy != null &&
-            grid[i][j+1].candy.colored == colored && grid[i][j+2].candy.colored == colored) {
-          grid[i][j].candy.isMatched = true;
-          grid[i][j+1].candy.isMatched = true;
-          grid[i][j+2].candy.isMatched = true;
-          foundMatch = true;
-        }
-      }
-    }
-
+   public boolean checkMatches() {
+  boolean foundMatch = false;
+  for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      for (int i = 0; i < rows - 2; i++) {
-        if (grid[i][j].candy == null) continue;
-        int colored = grid[i][j].candy.colored;
-        if (grid[i+1][j].candy != null && grid[i+2][j].candy != null &&
-            grid[i+1][j].candy.colored == colored && grid[i+2][j].candy.colored == colored) {
-          grid[i][j].candy.isMatched = true;
-          grid[i+1][j].candy.isMatched = true;
-          grid[i+2][j].candy.isMatched = true;
+      if (grid[i][j].candy != null) {
+        grid[i][j].candy.setMatched(false);
+      }
+    }
+  }
+
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols - 2; j++) {
+      if (grid[i][j].candy != null) {
+        int colored = grid[i][j].candy.getColorType();
+        
+        int matchLength = 1;
+        while (j + matchLength < cols && grid[i][j + matchLength].candy != null && 
+               grid[i][j + matchLength].candy.getColorType() == colored) 
+        {
+          matchLength++;
+        }
+
+        if (matchLength >= 3) {
           foundMatch = true;
+          for (int k = 0; k < matchLength; k++) {
+            grid[i][j + k].candy.setMatched(true);
+          }
+          
+          if (matchLength == 4) 
+          {
+            grid[i][j].candy.setPendingSpecial(2); 
+          }
+          if (matchLength >= 5) 
+          {
+            grid[i][j].candy.setPendingSpecial(3); 
+          }
+          
+          j += matchLength - 1; 
         }
       }
     }
-    return foundMatch;
   }
+
+  for (int j = 0; j < cols; j++) {
+    for (int i = 0; i < rows - 2; i++) {
+      if (grid[i][j].candy != null) {
+        int colored = grid[i][j].candy.getColorType();
+        
+        int matchLength = 1;
+        while (i + matchLength < rows && grid[i + matchLength][j].candy != null && grid[i + matchLength][j].candy.getColorType() == colored) {
+          matchLength++;
+        }
+
+        if (matchLength >= 3) 
+         {
+          foundMatch = true;
+          for (int k = 0; k < matchLength; k++) {
+            grid[i + k][j].candy.setMatched(true);
+         }
+          
+          if (matchLength == 4) 
+          {
+            grid[i][j].candy.setPendingSpecial(1); 
+          }
+          if (matchLength >= 5) 
+          {
+            grid[i][j].candy.setPendingSpecial(3); 
+          }
+          
+          i += matchLength - 1;
+        }
+      }
+    }
+  }
+
+  return foundMatch;
+}
 
   public void removeMatches() {
     for (int i = 0; i < rows; i++) {
       for (int j = 0; j < cols; j++) {
-        if (grid[i][j].candy != null && grid[i][j].candy.isMatched) {
-          grid[i][j].candy = null; 
+        Candy c = grid[i][j].candy;
+        if (c != null && c.getMatched()) {          
+          if (c.getPendingSpecial() > 0) 
+          {
+            Candy special = new Candy(c.getColorType(), grid[i][j].x + tileSize/2, grid[i][j].y + tileSize/2);
+            special.setSpecial(c.getPendingSpecial());
+            grid[i][j].candy = special; 
+          } 
+          else 
+          {
+            grid[i][j].candy = null; 
+          }
           score += 10;
         }
       }
+    }
+  }
+
+ public void activateSpecials() {
+    boolean chainReaction = false;
+
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        Candy c = grid[i][j].candy;
+        
+        if (c != null && c.getMatched() && c.getSpecialCandy() > 0 && !c.activated) {
+          c.activated = true; 
+          if (c.getSpecialCandy() == 1) {
+            for (int k = 0; k < cols; k++) {
+               if (grid[i][k].candy != null && grid[i][k].candy.getMatched() == false) {
+                 grid[i][k].candy.setMatched(true);
+                 chainReaction = true;
+               }
+            }
+          }
+          else if (c.getSpecialCandy() == 2) {
+            for (int k = 0; k < rows; k++) {
+               if (grid[k][j].candy != null && grid[k][j].candy.getMatched() == false) {
+                 grid[k][j].candy.setMatched(true);
+                 chainReaction = true;
+               }
+            }
+          }
+          else if (c.getSpecialCandy() == 3) {
+            for (int rOffset = -1; rOffset <= 1; rOffset++) {
+              for (int cOffset = -1; cOffset <= 1; cOffset++) {
+                int nr = i + rOffset;
+                int nc = j + cOffset;
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc].candy != null) {
+                   if (grid[nr][nc].candy.getMatched() == false) {
+                     grid[nr][nc].candy.setMatched(true);
+                     chainReaction = true;
+                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    if (chainReaction) {
+      activateSpecials(); 
     }
   }
 
